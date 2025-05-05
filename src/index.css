@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -98,4 +99,33 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom styles for Lite-Brite */
+.bg-litebrite-red {
+  background-color: #FF5252;
+}
+.bg-litebrite-orange {
+  background-color: #FF9D42;
+}
+.bg-litebrite-yellow {
+  background-color: #FFEB3B;
+}
+.bg-litebrite-green {
+  background-color: #4CAF50;
+}
+.bg-litebrite-blue {
+  background-color: #2196F3;
+}
+.bg-litebrite-purple {
+  background-color: #9C27B0;
+}
+.bg-litebrite-pink {
+  background-color: #FF4081;
+}
+.bg-litebrite-white {
+  background-color: #FFFFFF;
+}
+.bg-litebrite-background {
+  background-color: #1A1F2C;
 }

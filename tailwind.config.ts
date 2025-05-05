@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,28 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				litebrite: {
+					background: '#1A1F2C',
+					red: '#FF5252',
+					orange: '#FF9D42',
+					yellow: '#FFEB3B',
+					green: '#4CAF50',
+					blue: '#2196F3',
+					purple: '#9C27B0',
+					pink: '#FF4081',
+					white: '#FFFFFF'
 				}
+			},
+			boxShadow: {
+				'glow-red': '0 0 10px 2px rgba(255, 82, 82, 0.7)',
+				'glow-orange': '0 0 10px 2px rgba(255, 157, 66, 0.7)',
+				'glow-yellow': '0 0 10px 2px rgba(255, 235, 59, 0.7)',
+				'glow-green': '0 0 10px 2px rgba(76, 175, 80, 0.7)',
+				'glow-blue': '0 0 10px 2px rgba(33, 150, 243, 0.7)',
+				'glow-purple': '0 0 10px 2px rgba(156, 39, 176, 0.7)',
+				'glow-pink': '0 0 10px 2px rgba(255, 64, 129, 0.7)',
+				'glow-white': '0 0 10px 2px rgba(255, 255, 255, 0.7)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +106,16 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'glow-pulse': {
+					'0%, 100%': { boxShadow: '0 0 5px 1px rgba(255, 255, 255, 0.5)' },
+					'50%': { boxShadow: '0 0 12px 4px rgba(255, 255, 255, 0.8)' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'glow-pulse': 'glow-pulse 2s ease-in-out infinite'
 			}
 		}
 	},
