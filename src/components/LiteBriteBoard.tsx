@@ -131,9 +131,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mx-auto max-w-4xl p-4">
-      <h1 className="text-4xl font-bold mb-6 text-white">Lite-Brite</h1>
-      
+    <div className="flex flex-col items-center w-full max-w-4xl p-4">
       <div className="w-full mb-4">
         <ToolBar 
           activeTool={activeTool} 
