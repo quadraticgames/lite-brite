@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import LiteBriteBoard from '@/components/LiteBriteBoard';
 import { PEG_COLORS } from '@/lib/constants';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
-const Index = () => {
+const Index: React.FC = () => {
   const title = "GameU Lite-Brite!";
   const [letterColors, setLetterColors] = useState<string[]>(() => 
     title.split('').map(() => PEG_COLORS[Math.floor(Math.random() * PEG_COLORS.length)].value)
@@ -34,8 +45,31 @@ const Index = () => {
           ))}
         </h1>
         <div className="text-center text-gray-400 text-sm mb-0 max-w-2xl mx-auto">
-          <p className="text-white font-sans font-light"> 
-            Click on pegs to add or remove colored lights, or hold and drag to paint multiple pegs at once! Use the text tool to easily generate glowing text!
+          <p className="text-white font-sans font-light">
+            Click on pegs to add or remove colored lights, or hold and drag to paint multiple pegs at once! Use the text tool to easily generate glowing text!{' '}
+            <Dialog>
+              <DialogTrigger asChild>
+                <span className="text-blue-400 underline cursor-pointer hover:text-blue-300 transition-colors">Click here to learn more about Lite-Brite!</span>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[525px] bg-gray-800 border-gray-700 text-gray-200">
+                <DialogHeader>
+                  <DialogTitle className="text-xl text-white">What is Lite-Brite?</DialogTitle>
+                </DialogHeader>
+                <DialogDescription className="mt-4 space-y-4 text-sm font-sans font-light">
+                  <p>
+                    Lite-Brite is a super cool, light-up art toy that lets you create glowing pictures using colorful plastic pegs. You press the pegs into a black screen, and when the light behind it turns on—boom!—your artwork lights up like a mini neon sign. You can make your own designs or use templates that show you where to put each color. It’s like painting with light, and the results are always awesome!
+                  </p>
+                  <p>
+                    Here’s a fun fact: Lite-Brite was first released way back in 1967 by Hasbro, and it’s still going strong today! It’s been in cartoons, movies, and even on Stranger Things. In fact, a giant Lite-Brite board was built in 2022 that set a Guinness World Record with over 600,000 pegs! So, whether you’re making a glowing unicorn, rocket ship, or pixelated emoji, Lite-Brite makes your imagination shine bright.
+                  </p>
+                </DialogDescription>
+                <DialogFooter className="mt-6">
+                  <DialogClose asChild>
+                    <Button type="button" variant="secondary" className="bg-gray-600 hover:bg-gray-500 text-white">Close</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </p>
         </div>
       </div>

@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Peg from './Peg';
 import ColorPalette from './ColorPalette';
 import ToolBar from './ToolBar';
 import { PEG_COLORS, DEFAULT_GRID_SIZE, EMPTY_COLOR, TOOLS } from '@/lib/constants';
 import { textToPegPattern } from '@/lib/textToPegs';
-import { toast } from '@/components/ui/sonner';
+import { toast } from "sonner";
+import { toPng } from 'html-to-image';
 
 interface LiteBriteBoardProps {}
 
@@ -13,8 +14,8 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
   const cols = DEFAULT_GRID_SIZE.cols;
 
   // Initialize the grid with empty pegs
-  const [grid, setGrid] = useState<Array<Array<string>>>(() => 
-    Array(rows).fill(null).map(() => Array(cols).fill(EMPTY_COLOR))
+  const [grid, setGrid] = useState<Array<Array<string>>>(() =>
+    Array.from({ length: rows }, () => Array(cols).fill(EMPTY_COLOR))
   );
   
   // Add history for undo functionality
@@ -23,6 +24,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
   const [selectedColor, setSelectedColor] = useState(PEG_COLORS[0].value);
   const [activeTool, setActiveTool] = useState(TOOLS.PAINT);
   const [isPainting, setIsPainting] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // Save current state to history before making changes
   const saveToHistory = useCallback(() => {
@@ -143,6 +145,42 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     toast.info("Board cleared!");
   };
 
+  // ** NEW Function to clear the board (New Scene) **
+  const handleNewScene = useCallback(() => {
+    saveToHistory(); // Save the state *before* clearing
+    // Use DEFAULT_GRID_SIZE.rows and .cols correctly
+    const newEmptyGrid = Array.from({ length: DEFAULT_GRID_SIZE.rows }, () => 
+      Array(DEFAULT_GRID_SIZE.cols).fill(EMPTY_COLOR)
+    );
+    setGrid(newEmptyGrid); 
+    // Do we need to save the pre-cleared state again? saveToHistory already did.
+    // setHistory(prev => [...prev, grid]); // Removed potentially duplicate history save
+    toast.success("New scene created!");
+  }, [saveToHistory]); // Removed grid dependency as saveToHistory handles it
+
+  // ** NEW Function to Export Grid as PNG **
+  const handleExport = useCallback(async () => {
+    if (gridRef.current === null) {
+      toast.error("Could not find grid element to export.");
+      return;
+    }
+
+    try {
+      const dataUrl = await toPng(gridRef.current, { 
+        cacheBust: true, // Avoid issues with cached images
+        backgroundColor: '#000000' // Explicitly set background for transparency issues
+      });
+      const link = document.createElement('a');
+      link.download = 'lite-brite-creation.png';
+      link.href = dataUrl;
+      link.click();
+      toast.success("Exported as PNG!");
+    } catch (err) {
+      console.error('Oops, something went wrong!', err);
+      toast.error("Failed to export image.");
+    }
+  }, []); // No dependencies needed for this version
+
   // Find the appropriate glow class for a color
   const getGlowClass = (color: string) => {
     const pegColor = PEG_COLORS.find(c => c.value === color);
@@ -161,17 +199,20 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
           activeTool={activeTool} 
           setActiveTool={setActiveTool} 
           onTextSubmit={handleTextSubmit}
-          onClear={handleClear} // Keeping prop for now, will remove button in ToolBar
+          onClear={handleClear} // Existing clear function (may need review if different)
           onUndo={handleUndo}
+          onNewScene={handleNewScene}
+          onExport={handleExport} // Pass the export handler
         />
       </div>
 
       <div className="flex justify-center w-full overflow-x-auto">
         <div className="bg-litebrite-background p-6 rounded-lg shadow-xl inline-block">
           <div 
-            className="grid gap-1" 
-            style={{ 
-              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+            ref={gridRef} // Assign the ref to the grid container
+            className="grid gap-1 bg-black p-4 rounded-lg shadow-lg border border-gray-700"
+            style={{
+              gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
               userSelect: 'none' // Prevent text selection during drag
             }}
           >

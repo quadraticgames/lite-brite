@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { Brush, TextCursor, Undo } from 'lucide-react';
+import { Brush, TextCursor, Undo, FilePlus, Download } from 'lucide-react';
 import { TOOLS } from '@/lib/constants';
 
 interface ToolBarProps {
@@ -12,9 +12,11 @@ interface ToolBarProps {
   onTextSubmit: (text: string) => void;
   onClear: () => void;
   onUndo: () => void;
+  onNewScene: () => void;
+  onExport: () => void;
 }
 
-const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubmit, onClear, onUndo }) => {
+const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubmit, onClear, onUndo, onNewScene, onExport }) => {
   const [text, setText] = useState('');
   const [open, setOpen] = useState(false);
   
@@ -76,11 +78,29 @@ const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubm
 
       <Button
         size="icon"
+        className="bg-gray-700 text-gray-400 hover:bg-gray-600 transition-all rounded-md"
+        onClick={onNewScene}
+        title="New Scene (Clear Board)"
+      >
+        <FilePlus className="h-5 w-5" />
+      </Button>
+
+      <Button
+        size="icon"
         className="bg-gray-700 text-gray-400 hover:bg-gray-600 transition-all rounded-md" 
         onClick={onUndo}
         title="Undo"
       >
         <Undo className="h-5 w-5" />
+      </Button>
+
+      <Button
+        size="icon"
+        className="bg-gray-700 text-gray-400 hover:bg-gray-600 transition-all rounded-md"
+        onClick={onExport}
+        title="Export as PNG"
+      >
+        <Download className="h-5 w-5" />
       </Button>
     </div>
   );
