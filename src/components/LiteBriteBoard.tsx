@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Peg from './Peg';
 import ColorPalette from './ColorPalette';
 import ToolBar from './ToolBar';
@@ -26,6 +26,28 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
   const [isPainting, setIsPainting] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
+  // ** Sound Effect **
+  const clickSound = useMemo(() => {
+    // Ensure this runs only on the client-side
+    if (typeof window !== 'undefined') {
+      // Path relative to the public folder
+      return new Audio('/click.wav'); 
+    } 
+    return null;
+  }, []);
+
+  const playClickSound = useCallback(() => {
+    if (clickSound) {
+      clickSound.currentTime = 0; // Rewind to start in case of rapid clicks
+      clickSound.play().catch(error => {
+        // Autoplay policy might block the sound initially
+        console.error("Error playing click sound:", error);
+        // Consider adding a user interaction (e.g., a general 'enable sound' button)
+        // if sound doesn't play automatically.
+      });
+    }
+  }, [clickSound]);
+
   // Save current state to history before making changes
   const saveToHistory = useCallback(() => {
     // Create a deep copy of the current grid
@@ -52,12 +74,21 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
         console.error("Grid or row is undefined in applyToggleColorChange");
         return prevGrid;
       }
+      // Determine if the color is actually changing
+      const currentColor = prevGrid[row][col];
+      const newColor = currentColor === selectedColor ? EMPTY_COLOR : selectedColor;
+      
+      // Only play sound if the color is different from the new target color
+      // (prevents playing sound when clicking an already colored peg to erase it, unless desired)
+      // Let's play it on any change for now.
+      playClickSound(); 
+
       const newGrid = [...prevGrid];
       newGrid[row] = [...newGrid[row]]; // Ensure row is copied
-      newGrid[row][col] = prevGrid[row][col] === selectedColor ? EMPTY_COLOR : selectedColor;
+      newGrid[row][col] = newColor;
       return newGrid;
     });
-  }, [selectedColor]);
+  }, [selectedColor, playClickSound]); // Added playClickSound dependency
 
   // Handle mouse down for initial click/drag start
   const handleMouseDown = useCallback((row: number, col: number) => {
@@ -74,8 +105,9 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
       // Apply selected color directly, only if the peg isn't already that color
       setGrid(prevGrid => {
         if (!prevGrid || !prevGrid[row]) return prevGrid;
-        // Only paint if the peg is currently empty or a different color
+        // Only paint and play sound if the peg is currently empty or a different color
         if (prevGrid[row][col] !== selectedColor) {
+           playClickSound(); // Play sound on drag paint
            const newGrid = prevGrid.map((r, rIndex) =>
                rIndex === row ? [...r.slice(0, col), selectedColor, ...r.slice(col + 1)] : r
            );
@@ -84,7 +116,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
         return prevGrid; // No change needed if already the selected color
       });
     }
-  }, [isPainting, activeTool, selectedColor]); // Depends on selectedColor now
+  }, [isPainting, activeTool, selectedColor, playClickSound]); // Added playClickSound dependency
 
   const handleMouseUp = useCallback(() => {
     if (isPainting) { // Only reset if we were actually painting
