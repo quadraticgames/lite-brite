@@ -1,4 +1,3 @@
-
 import { DEFAULT_GRID_SIZE } from './constants';
 
 // Simple mapping of characters to peg patterns
@@ -237,84 +236,89 @@ const charPatterns: Record<string, boolean[][]> = {
   ],
 };
 
+// Define character dimensions and spacing constants
+const CHAR_HEIGHT = 6; // Standard height from patterns
+const CHAR_SPACING_X = 1; // Pegs between characters horizontally
+const LINE_HEIGHT = CHAR_HEIGHT + 1; // Pegs between lines vertically
+const GRID_ROWS = DEFAULT_GRID_SIZE.rows;
+const GRID_COLS = DEFAULT_GRID_SIZE.cols;
+
+interface PegChange {
+  row: number;
+  col: number;
+  color: string;
+}
+
 export function textToPegPattern(
-  text: string, 
-  selectedColor: string, 
-  centerText: boolean = false,
-  startRow: number = 2, 
-  startCol: number = 2
-) {
-  const gridChanges: Array<{ row: number; col: number; color: string }> = [];
+  text: string,
+  selectedColor: string,
+  startRow: number = 2, // Start row (from top)
+  startCol: number = 2  // Start column (from left)
+): PegChange[] {
+  const pegChanges: PegChange[] = [];
+  let currentX = startCol;
+  let currentY = startRow;
+
+  // Convert text to uppercase to match patterns
   const upperText = text.toUpperCase();
-  
-  // Calculate text dimensions to enable centering
-  const charWidths: number[] = [];
-  let maxHeight = 0;
-  let totalWidth = 0;
-  
-  // Calculate dimensions of the text
-  for (let i = 0; i < upperText.length; i++) {
-    const char = upperText[i];
+
+  for (const char of upperText) {
     const pattern = charPatterns[char];
-    
-    if (pattern) {
-      charWidths.push(pattern[0].length);
-      maxHeight = Math.max(maxHeight, pattern.length);
-      totalWidth += pattern[0].length;
-    } else {
-      charWidths.push(2); // Default width for unknown characters
-      totalWidth += 2;
+    if (!pattern) {
+      // If character not found (like space), just advance horizontal position
+      // Use a default width for space, e.g., 3 pegs
+      const spaceWidth = 3;
+      if (currentX + spaceWidth >= GRID_COLS) { // Check for wrap on space
+         currentY += LINE_HEIGHT;
+         currentX = startCol;
+         if (currentY >= GRID_ROWS - CHAR_HEIGHT) break; // Stop if next line won't fit
+      } else {
+         currentX += spaceWidth + CHAR_SPACING_X;
+      }
+      continue; // Skip to next character
     }
-    
-    // Add space between characters (except the last one)
-    if (i < upperText.length - 1) {
-      totalWidth += 1;
+
+    const patternHeight = pattern.length; // Should typically be CHAR_HEIGHT
+    // Find max width of the current character pattern
+    const patternWidth = pattern.reduce((maxWidth, row) => Math.max(maxWidth, row.length), 0);
+
+    // --- Wrapping Logic --- 
+    if (currentX + patternWidth >= GRID_COLS) {
+      // Move to the next line
+      currentY += LINE_HEIGHT;
+      currentX = startCol;
+
+      // Check if the new line goes off the board vertically
+      if (currentY >= GRID_ROWS - CHAR_HEIGHT) {
+        // Not enough vertical space for the next line
+        break; // Stop processing the rest of the text
+      }
     }
-  }
-  
-  // Calculate starting position for centered text
-  let cursorCol = startCol;
-  let cursorRow = startRow;
-  
-  if (centerText) {
-    cursorCol = Math.max(0, Math.floor((DEFAULT_GRID_SIZE.cols - totalWidth) / 2));
-    cursorRow = Math.max(0, Math.floor((DEFAULT_GRID_SIZE.rows - maxHeight) / 2));
-  }
-  
-  const initialCursorCol = cursorCol;
-  
-  // Process each character
-  for (let i = 0; i < upperText.length; i++) {
-    const char = upperText[i];
-    const pattern = charPatterns[char];
+    // --- End Wrapping Logic ---
     
-    if (pattern) {
-      // Apply the pattern at the current position
-      for (let y = 0; y < pattern.length; y++) {
-        for (let x = 0; x < pattern[y].length; x++) {
-          if (pattern[y][x]) {
-            const row = cursorRow + y;
-            const col = cursorCol + x;
-            
-            // Only add if within grid bounds
-            if (row >= 0 && row < DEFAULT_GRID_SIZE.rows && col >= 0 && col < DEFAULT_GRID_SIZE.cols) {
-              gridChanges.push({
-                row,
-                col,
-                color: selectedColor
-              });
-            }
+    // Check if character placement itself goes off the board (even after potential wrap)
+    if (currentY >= GRID_ROWS - CHAR_HEIGHT) { 
+        break; // Stop if the character won't fit vertically
+    }
+
+    // Place the pegs for the current character
+    for (let r = 0; r < patternHeight; r++) {
+      for (let c = 0; c < pattern[r].length; c++) {
+        if (pattern[r][c]) {
+          const pegRow = currentY + r;
+          const pegCol = currentX + c;
+
+          // Final check to ensure peg is within grid bounds
+          if (pegRow >= 0 && pegRow < GRID_ROWS && pegCol >= 0 && pegCol < GRID_COLS) {
+            pegChanges.push({ row: pegRow, col: pegCol, color: selectedColor });
           }
         }
       }
-      
-      // Move cursor to the right for the next character
-      cursorCol += pattern[0].length + 1;
-    } else {
-      // Unknown character, just add a space
-      cursorCol += 2;
     }
+
+    // Advance horizontal position for the next character
+    currentX += patternWidth + CHAR_SPACING_X;
   }
-  
-  return gridChanges;
+
+  return pegChanges;
 }

@@ -102,29 +102,35 @@
 }
 
 /* Custom styles for Lite-Brite */
-.bg-litebrite-red {
-  background-color: #FF5252;
-}
-.bg-litebrite-orange {
-  background-color: #FF9D42;
-}
-.bg-litebrite-yellow {
-  background-color: #FFEB3B;
-}
-.bg-litebrite-green {
-  background-color: #4CAF50;
-}
-.bg-litebrite-blue {
-  background-color: #2196F3;
-}
-.bg-litebrite-purple {
-  background-color: #9C27B0;
-}
-.bg-litebrite-pink {
-  background-color: #FF4081;
-}
 .bg-litebrite-white {
-  background-color: #FFFFFF;
+  background-color: #c5c5c5; /* Changed to #c5c5c5 */
+}
+.bg-litebrite-black {
+  background-color: #000000;
+}
+.bg-litebrite-crimson-red {
+  background-color: #E63946;
+}
+.bg-litebrite-deep-orange {
+  background-color: #F77F00;
+}
+.bg-litebrite-gold-yellow {
+  background-color: #FCCA46;
+}
+.bg-litebrite-lime-green {
+  background-color: #90BE6D;
+}
+.bg-litebrite-turquoise {
+  background-color: #43AA8B;
+}
+.bg-litebrite-sky-blue {
+  background-color: #4D9DE0; /* Updated Sky Blue */
+}
+.bg-litebrite-royal-purple {
+  background-color: #8338EC;
+}
+.bg-litebrite-hot-pink {
+  background-color: #FF006E;
 }
 .bg-litebrite-background {
   background-color: #1A1F2C;

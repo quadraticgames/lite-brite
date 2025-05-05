@@ -21,7 +21,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
   // Add history for undo functionality
   const [history, setHistory] = useState<Array<Array<Array<string>>>>([]);
 
-  const [selectedColor, setSelectedColor] = useState(PEG_COLORS[0].value);
+  const [selectedColor, setSelectedColor] = useState(PEG_COLORS[0].value); // Revert: Select White initially
   const [activeTool, setActiveTool] = useState(TOOLS.PAINT);
   const [isPainting, setIsPainting] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -147,8 +147,8 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     
     saveToHistory();
     
-    // Calculate center position for text
-    const pegChanges = textToPegPattern(text, selectedColor, true);
+    // Calculate peg changes using the updated function (defaults to startRow=2, startCol=2)
+    const pegChanges = textToPegPattern(text, selectedColor); // Removed the 3rd boolean argument
     
     if (pegChanges.length === 0) {
       toast.error("Unable to place text on the board!");
@@ -168,6 +168,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     });
 
     toast.success("Text placed on the board!");
+    setActiveTool(TOOLS.PAINT); // Switch back to paint tool after text placement
   };
 
   // Clear the board

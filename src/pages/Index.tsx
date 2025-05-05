@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button"
 
 const Index: React.FC = () => {
-  const title = "GameU Lite-Brite!";
+  const title = "Lite-Brite!";
   const [letterColors, setLetterColors] = useState<string[]>(() => 
     title.split('').map(() => PEG_COLORS[Math.floor(Math.random() * PEG_COLORS.length)].value)
   );
@@ -36,6 +36,7 @@ const Index: React.FC = () => {
           src="/lovable-uploads/315b283c-8c23-45f9-afd8-94fefca84bae.png" 
           alt="Lite-Brite Box" 
           className="max-w-xs w-3/5 mb-4 rounded-lg" 
+          style={{ width: '125px' }}
         />
         <h1 className="text-4xl font-bold mb-2 text-white font-ribeye"> 
           {title.split('').map((letter, index) => (

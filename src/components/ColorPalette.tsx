@@ -16,8 +16,8 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({ selectedColor, onSelectColo
           key={color.name}
           className={cn(
             "w-8 h-8 rounded-full transition-transform duration-200",
-            color.tailwindClass,
-            color.glowClass,
+            color.tailwindClass, 
+            color.glowClass, // Restore glow class
             selectedColor === color.value ? "scale-125 ring-2 ring-white" : "hover:scale-110"
           )}
           onClick={() => onSelectColor(color.value)}
