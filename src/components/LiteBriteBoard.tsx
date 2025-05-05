@@ -29,7 +29,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     // Create a deep copy of the current grid
     const currentGridCopy = grid.map(row => [...row]);
     setHistory(prev => [...prev, currentGridCopy]);
-  }, [grid]);
+  }, [grid, setHistory]);
 
   // Handle undo
   const handleUndo = useCallback(() => {
@@ -41,48 +41,68 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     } else {
       toast.info("Nothing to undo");
     }
-  }, [history]);
+  }, [history, toast]);
 
-  // Handle peg click based on active tool
-  const handlePegClick = useCallback((row: number, col: number) => {
-    if (activeTool === TOOLS.PAINT) {
-      saveToHistory();
-      // Paint mode - set the selected color
-      setGrid(prevGrid => {
-        const newGrid = [...prevGrid];
-        newGrid[row] = [...newGrid[row]];
-        newGrid[row][col] = prevGrid[row][col] === selectedColor ? EMPTY_COLOR : selectedColor;
-        return newGrid;
-      });
-    }
-  }, [activeTool, selectedColor, saveToHistory]);
+  // ** NEW Function to apply TOGGLE color change for initial click **
+  const applyToggleColorChange = useCallback((row: number, col: number) => {
+    setGrid(prevGrid => {
+      if (!prevGrid || !prevGrid[row]) {
+        console.error("Grid or row is undefined in applyToggleColorChange");
+        return prevGrid;
+      }
+      const newGrid = [...prevGrid];
+      newGrid[row] = [...newGrid[row]]; // Ensure row is copied
+      newGrid[row][col] = prevGrid[row][col] === selectedColor ? EMPTY_COLOR : selectedColor;
+      return newGrid;
+    });
+  }, [selectedColor]);
 
-  // Handle mouse events for drag painting
+  // Handle mouse down for initial click/drag start
   const handleMouseDown = useCallback((row: number, col: number) => {
     if (activeTool === TOOLS.PAINT) {
-      saveToHistory();
+      saveToHistory(); // Save history ONLY on initial click/drag start
       setIsPainting(true);
-      handlePegClick(row, col);
+      applyToggleColorChange(row, col); // Apply the TOGGLE change
     }
-  }, [activeTool, handlePegClick, saveToHistory]);
+  }, [activeTool, applyToggleColorChange, saveToHistory]); // Use applyToggleColorChange
 
+  // Handle mouse enter for drag painting (apply color directly, no toggle)
   const handleMouseEnter = useCallback((row: number, col: number) => {
     if (isPainting && activeTool === TOOLS.PAINT) {
-      handlePegClick(row, col);
+      // Apply selected color directly, only if the peg isn't already that color
+      setGrid(prevGrid => {
+        if (!prevGrid || !prevGrid[row]) return prevGrid;
+        // Only paint if the peg is currently empty or a different color
+        if (prevGrid[row][col] !== selectedColor) {
+           const newGrid = prevGrid.map((r, rIndex) =>
+               rIndex === row ? [...r.slice(0, col), selectedColor, ...r.slice(col + 1)] : r
+           );
+           return newGrid;
+        }
+        return prevGrid; // No change needed if already the selected color
+      });
     }
-  }, [isPainting, activeTool, handlePegClick]);
+  }, [isPainting, activeTool, selectedColor]); // Depends on selectedColor now
 
   const handleMouseUp = useCallback(() => {
-    setIsPainting(false);
-  }, []);
+    if (isPainting) { // Only reset if we were actually painting
+        setIsPainting(false);
+    }
+  }, [isPainting]);
 
   // Add global mouse up handler
   useEffect(() => {
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
+    const handleGlobalMouseUp = () => {
+        if (isPainting) {
+            setIsPainting(false);
+        }
     };
-  }, [handleMouseUp]);
+    // Use the captured event on window to handle mouseup outside the grid
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => {
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isPainting]);
 
   // Handle text submission
   const handleTextSubmit = (text: string) => {
@@ -164,9 +184,8 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
                   row={rowIndex}
                   col={colIndex}
                   glowClass={getGlowClass(pegColor)}
-                  onClick={handlePegClick}
-                  onMouseDown={handleMouseDown}
-                  onMouseEnter={handleMouseEnter}
+                  onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
+                  onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
                 />
               ))
             )}
