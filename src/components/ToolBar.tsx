@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { PaintBucket, TextCursor, Copy } from 'lucide-react';
+import { Brush, TextCursor, Undo } from 'lucide-react';
 import { TOOLS } from '@/lib/constants';
 
 interface ToolBarProps {
@@ -12,9 +12,10 @@ interface ToolBarProps {
   setActiveTool: (tool: string) => void;
   onTextSubmit: (text: string) => void;
   onClear: () => void;
+  onUndo: () => void;
 }
 
-const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubmit, onClear }) => {
+const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubmit, onClear, onUndo }) => {
   const [text, setText] = useState('');
   const [open, setOpen] = useState(false);
   
@@ -38,7 +39,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubm
         onClick={() => setActiveTool(TOOLS.PAINT)}
         title="Paint Tool"
       >
-        <PaintBucket className="h-5 w-5" />
+        <Brush className="h-5 w-5" />
       </Button>
       
       <Dialog open={open} onOpenChange={setOpen}>
@@ -75,14 +76,11 @@ const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubm
       <Button
         variant="outline"
         size="icon"
-        className={cn(
-          "transition-all",
-          activeTool === TOOLS.FORMAT_PAINTER ? "bg-blue-600 text-white" : "bg-gray-700 hover:bg-gray-600"
-        )}
-        onClick={() => setActiveTool(TOOLS.FORMAT_PAINTER)}
-        title="Format Painter"
+        className="bg-gray-700 hover:bg-gray-600 transition-all"
+        onClick={onUndo}
+        title="Undo"
       >
-        <Copy className="h-5 w-5" />
+        <Undo className="h-5 w-5" />
       </Button>
       
       <div className="ml-auto">

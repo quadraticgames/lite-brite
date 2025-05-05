@@ -17,15 +17,37 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
   const [grid, setGrid] = useState<Array<Array<string>>>(() => 
     Array(rows).fill(null).map(() => Array(cols).fill(EMPTY_COLOR))
   );
+  
+  // Add history for undo functionality
+  const [history, setHistory] = useState<Array<Array<Array<string>>>>([]);
 
   const [selectedColor, setSelectedColor] = useState(PEG_COLORS[0].value);
   const [activeTool, setActiveTool] = useState(TOOLS.PAINT);
-  const [formatPainterColor, setFormatPainterColor] = useState<string | null>(null);
   const [isPainting, setIsPainting] = useState(false);
+
+  // Save current state to history before making changes
+  const saveToHistory = useCallback(() => {
+    // Create a deep copy of the current grid
+    const currentGridCopy = grid.map(row => [...row]);
+    setHistory(prev => [...prev, currentGridCopy]);
+  }, [grid]);
+
+  // Handle undo
+  const handleUndo = useCallback(() => {
+    if (history.length > 0) {
+      const previousState = history[history.length - 1];
+      setGrid(previousState);
+      setHistory(prev => prev.slice(0, -1));
+      toast.info("Undo successful");
+    } else {
+      toast.info("Nothing to undo");
+    }
+  }, [history]);
 
   // Handle peg click based on active tool
   const handlePegClick = useCallback((row: number, col: number) => {
     if (activeTool === TOOLS.PAINT) {
+      saveToHistory();
       // Paint mode - set the selected color
       setGrid(prevGrid => {
         const newGrid = [...prevGrid];
@@ -33,34 +55,17 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
         newGrid[row][col] = prevGrid[row][col] === selectedColor ? EMPTY_COLOR : selectedColor;
         return newGrid;
       });
-    } else if (activeTool === TOOLS.FORMAT_PAINTER) {
-      if (formatPainterColor === null) {
-        // First click - copy color
-        const pegColor = grid[row][col];
-        if (pegColor !== EMPTY_COLOR) {
-          setFormatPainterColor(pegColor);
-          toast.success("Color picked! Click another peg to apply.");
-        }
-      } else {
-        // Second click - apply copied color
-        setGrid(prevGrid => {
-          const newGrid = [...prevGrid];
-          newGrid[row] = [...newGrid[row]];
-          newGrid[row][col] = formatPainterColor;
-          return newGrid;
-        });
-        setFormatPainterColor(null);
-      }
     }
-  }, [activeTool, formatPainterColor, grid, selectedColor]);
+  }, [activeTool, selectedColor, saveToHistory]);
 
   // Handle mouse events for drag painting
   const handleMouseDown = useCallback((row: number, col: number) => {
     if (activeTool === TOOLS.PAINT) {
+      saveToHistory();
       setIsPainting(true);
       handlePegClick(row, col);
     }
-  }, [activeTool, handlePegClick]);
+  }, [activeTool, handlePegClick, saveToHistory]);
 
   const handleMouseEnter = useCallback((row: number, col: number) => {
     if (isPainting && activeTool === TOOLS.PAINT) {
@@ -87,6 +92,8 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
       return;
     }
     
+    saveToHistory();
+    
     // Calculate center position for text
     const pegChanges = textToPegPattern(text, selectedColor, true);
     
@@ -112,16 +119,10 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
 
   // Clear the board
   const handleClear = () => {
+    saveToHistory();
     setGrid(Array(rows).fill(null).map(() => Array(cols).fill(EMPTY_COLOR)));
     toast.info("Board cleared!");
   };
-
-  // Reset format painter color when tool changes
-  useEffect(() => {
-    if (activeTool !== TOOLS.FORMAT_PAINTER) {
-      setFormatPainterColor(null);
-    }
-  }, [activeTool]);
 
   // Find the appropriate glow class for a color
   const getGlowClass = (color: string) => {
@@ -139,6 +140,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
           setActiveTool={setActiveTool} 
           onTextSubmit={handleTextSubmit}
           onClear={handleClear}
+          onUndo={handleUndo}
         />
       </div>
 

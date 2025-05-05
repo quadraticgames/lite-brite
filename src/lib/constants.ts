@@ -17,5 +17,4 @@ export const EMPTY_COLOR = 'transparent';
 export const TOOLS = {
   PAINT: 'paint',
   TEXT: 'text',
-  FORMAT_PAINTER: 'format_painter',
 };
