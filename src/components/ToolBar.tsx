@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,13 +27,14 @@ const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubm
   };
 
   return (
-    <div className="flex flex-wrap gap-2 mb-4 justify-center items-center bg-gray-800 p-4 rounded-lg">
+    <div className="flex flex-wrap gap-2 items-center"> 
       <Button
-        variant="outline"
         size="icon"
         className={cn(
-          "transition-all",
-          activeTool === TOOLS.PAINT ? "bg-blue-600 text-white" : "bg-gray-700 hover:bg-gray-600"
+          "transition-all rounded-md",
+          activeTool === TOOLS.PAINT 
+            ? "bg-blue-600 text-white hover:bg-blue-700" 
+            : "bg-gray-700 text-gray-400 hover:bg-gray-600"
         )}
         onClick={() => setActiveTool(TOOLS.PAINT)}
         title="Paint Tool"
@@ -45,11 +45,12 @@ const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubm
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button
-            variant="outline"
             size="icon"
             className={cn(
-              "transition-all",
-              activeTool === TOOLS.TEXT ? "bg-blue-600 text-white" : "bg-gray-700 hover:bg-gray-600"
+              "transition-all rounded-md",
+              activeTool === TOOLS.TEXT 
+                ? "bg-blue-600 text-white hover:bg-blue-700" 
+                : "bg-gray-700 text-gray-400 hover:bg-gray-600"
             )}
             onClick={() => setActiveTool(TOOLS.TEXT)}
             title="Text Tool"
@@ -74,24 +75,13 @@ const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubm
       </Dialog>
 
       <Button
-        variant="outline"
         size="icon"
-        className="bg-gray-700 hover:bg-gray-600 transition-all"
+        className="bg-gray-700 text-gray-400 hover:bg-gray-600 transition-all rounded-md" 
         onClick={onUndo}
         title="Undo"
       >
         <Undo className="h-5 w-5" />
       </Button>
-      
-      <div className="ml-auto">
-        <Button 
-          variant="destructive" 
-          onClick={onClear} 
-          className="bg-red-600 hover:bg-red-700"
-        >
-          Clear
-        </Button>
-      </div>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -84,6 +83,10 @@ export default {
 				'glow-purple': '0 0 10px 2px rgba(156, 39, 176, 0.7)',
 				'glow-pink': '0 0 10px 2px rgba(255, 64, 129, 0.7)',
 				'glow-white': '0 0 10px 2px rgba(255, 255, 255, 0.7)',
+			},
+			fontFamily: {
+				sans: ['Inter var', 'sans-serif'],
+				ribeye: ['Bungee', 'cursive'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
