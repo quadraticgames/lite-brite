@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Peg from './Peg';
 import ColorPalette from './ColorPalette';
 import ToolBar from './ToolBar';
@@ -21,9 +21,10 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
   const [selectedColor, setSelectedColor] = useState(PEG_COLORS[0].value);
   const [activeTool, setActiveTool] = useState(TOOLS.PAINT);
   const [formatPainterColor, setFormatPainterColor] = useState<string | null>(null);
+  const [isPainting, setIsPainting] = useState(false);
 
   // Handle peg click based on active tool
-  const handlePegClick = (row: number, col: number) => {
+  const handlePegClick = useCallback((row: number, col: number) => {
     if (activeTool === TOOLS.PAINT) {
       // Paint mode - set the selected color
       setGrid(prevGrid => {
@@ -51,11 +52,43 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
         setFormatPainterColor(null);
       }
     }
-  };
+  }, [activeTool, formatPainterColor, grid, selectedColor]);
+
+  // Handle mouse events for drag painting
+  const handleMouseDown = useCallback((row: number, col: number) => {
+    if (activeTool === TOOLS.PAINT) {
+      setIsPainting(true);
+      handlePegClick(row, col);
+    }
+  }, [activeTool, handlePegClick]);
+
+  const handleMouseEnter = useCallback((row: number, col: number) => {
+    if (isPainting && activeTool === TOOLS.PAINT) {
+      handlePegClick(row, col);
+    }
+  }, [isPainting, activeTool, handlePegClick]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsPainting(false);
+  }, []);
+
+  // Add global mouse up handler
+  useEffect(() => {
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [handleMouseUp]);
 
   // Handle text submission
   const handleTextSubmit = (text: string) => {
-    const pegChanges = textToPegPattern(text, selectedColor);
+    if (!text.trim()) {
+      toast.error("Please enter some text!");
+      return;
+    }
+    
+    // Calculate center position for text
+    const pegChanges = textToPegPattern(text, selectedColor, true);
     
     if (pegChanges.length === 0) {
       toast.error("Unable to place text on the board!");
@@ -66,7 +99,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
       const newGrid = prevGrid.map(row => [...row]);
       
       pegChanges.forEach(change => {
-        if (change.row < rows && change.col < cols) {
+        if (change.row >= 0 && change.row < rows && change.col >= 0 && change.col < cols) {
           newGrid[change.row][change.col] = change.color;
         }
       });
@@ -113,9 +146,15 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
         <ColorPalette selectedColor={selectedColor} onSelectColor={setSelectedColor} />
       </div>
 
-      <div className="w-full overflow-x-auto">
+      <div className="flex justify-center w-full overflow-x-auto">
         <div className="bg-litebrite-background p-6 rounded-lg shadow-xl inline-block">
-          <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+          <div 
+            className="grid gap-1" 
+            style={{ 
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              userSelect: 'none' // Prevent text selection during drag
+            }}
+          >
             {grid.map((row, rowIndex) =>
               row.map((pegColor, colIndex) => (
                 <Peg
@@ -126,6 +165,8 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
                   col={colIndex}
                   glowClass={getGlowClass(pegColor)}
                   onClick={handlePegClick}
+                  onMouseDown={handleMouseDown}
+                  onMouseEnter={handleMouseEnter}
                 />
               ))
             )}

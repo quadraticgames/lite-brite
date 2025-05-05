@@ -9,6 +9,8 @@ interface PegProps {
   col: number;
   glowClass?: string;
   onClick: (row: number, col: number) => void;
+  onMouseDown: (row: number, col: number) => void;
+  onMouseEnter: (row: number, col: number) => void;
 }
 
 const Peg: React.FC<PegProps> = ({
@@ -17,10 +19,20 @@ const Peg: React.FC<PegProps> = ({
   row,
   col,
   glowClass,
-  onClick
+  onClick,
+  onMouseDown,
+  onMouseEnter
 }) => {
   const handleClick = () => {
     onClick(row, col);
+  };
+  
+  const handleMouseDown = () => {
+    onMouseDown(row, col);
+  };
+
+  const handleMouseEnter = () => {
+    onMouseEnter(row, col);
   };
   
   return (
@@ -34,6 +46,8 @@ const Peg: React.FC<PegProps> = ({
         backgroundColor: isActive ? color : undefined,
       }}
       onClick={handleClick}
+      onMouseDown={handleMouseDown}
+      onMouseEnter={handleMouseEnter}
     />
   );
 };

@@ -240,13 +240,48 @@ const charPatterns: Record<string, boolean[][]> = {
 export function textToPegPattern(
   text: string, 
   selectedColor: string, 
+  centerText: boolean = false,
   startRow: number = 2, 
   startCol: number = 2
 ) {
   const gridChanges: Array<{ row: number; col: number; color: string }> = [];
   const upperText = text.toUpperCase();
   
+  // Calculate text dimensions to enable centering
+  const charWidths: number[] = [];
+  let maxHeight = 0;
+  let totalWidth = 0;
+  
+  // Calculate dimensions of the text
+  for (let i = 0; i < upperText.length; i++) {
+    const char = upperText[i];
+    const pattern = charPatterns[char];
+    
+    if (pattern) {
+      charWidths.push(pattern[0].length);
+      maxHeight = Math.max(maxHeight, pattern.length);
+      totalWidth += pattern[0].length;
+    } else {
+      charWidths.push(2); // Default width for unknown characters
+      totalWidth += 2;
+    }
+    
+    // Add space between characters (except the last one)
+    if (i < upperText.length - 1) {
+      totalWidth += 1;
+    }
+  }
+  
+  // Calculate starting position for centered text
   let cursorCol = startCol;
+  let cursorRow = startRow;
+  
+  if (centerText) {
+    cursorCol = Math.max(0, Math.floor((DEFAULT_GRID_SIZE.cols - totalWidth) / 2));
+    cursorRow = Math.max(0, Math.floor((DEFAULT_GRID_SIZE.rows - maxHeight) / 2));
+  }
+  
+  const initialCursorCol = cursorCol;
   
   // Process each character
   for (let i = 0; i < upperText.length; i++) {
@@ -258,11 +293,11 @@ export function textToPegPattern(
       for (let y = 0; y < pattern.length; y++) {
         for (let x = 0; x < pattern[y].length; x++) {
           if (pattern[y][x]) {
-            const row = startRow + y;
+            const row = cursorRow + y;
             const col = cursorCol + x;
             
             // Only add if within grid bounds
-            if (row < DEFAULT_GRID_SIZE.rows && col < DEFAULT_GRID_SIZE.cols) {
+            if (row >= 0 && row < DEFAULT_GRID_SIZE.rows && col >= 0 && col < DEFAULT_GRID_SIZE.cols) {
               gridChanges.push({
                 row,
                 col,
@@ -273,7 +308,7 @@ export function textToPegPattern(
         }
       }
       
-      // Move cursor to the right for the next character (width of pattern + 1 space)
+      // Move cursor to the right for the next character
       cursorCol += pattern[0].length + 1;
     } else {
       // Unknown character, just add a space
