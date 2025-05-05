@@ -29,7 +29,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubm
   };
 
   return (
-    <div className="flex flex-wrap gap-2 items-center"> 
+    <div className="flex flex-col gap-2"> 
       <Button
         size="icon"
         className={cn(

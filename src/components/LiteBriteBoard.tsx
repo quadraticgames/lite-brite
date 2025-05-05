@@ -220,26 +220,21 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-4xl p-4"> 
-      {/* Combined Controls Bar */}
-      <div className="flex items-baseline justify-center gap-4 w-full mb-2 p-4 bg-gray-900 rounded-lg"> 
-        <span className="text-lg font-medium text-gray-300">Colors:</span>
-        <ColorPalette selectedColor={selectedColor} onSelectColor={setSelectedColor} />
-        
-        <span className="text-lg font-medium text-gray-300 ml-4">Tools:</span>
-        <ToolBar 
-          activeTool={activeTool} 
-          setActiveTool={setActiveTool} 
-          onTextSubmit={handleTextSubmit}
-          onClear={handleClear} // Existing clear function (may need review if different)
-          onUndo={handleUndo}
-          onNewScene={handleNewScene}
-          onExport={handleExport} // Pass the export handler
+    // Main container: Horizontal flex layout
+    <div className="flex justify-center items-start w-full max-w-5xl p-4 gap-6"> 
+
+      {/* Left Column: Color Palette */}
+      <div className="flex flex-col items-center gap-2"> 
+        <span className="text-lg font-medium text-gray-300 mb-2">Colors:</span>
+        <ColorPalette 
+          selectedColor={selectedColor} 
+          onSelectColor={setSelectedColor} 
         />
       </div>
 
-      <div className="flex justify-center w-full overflow-x-auto">
-        <div className="bg-litebrite-background p-6 rounded-lg shadow-xl inline-block">
+      {/* Center Column: Grid */}
+      <div className="flex justify-center">
+        <div className="bg-litebrite-background p-6 rounded-lg shadow-xl inline-block"> 
           <div 
             ref={gridRef} // Assign the ref to the grid container
             className="grid gap-1 bg-black p-4 rounded-lg shadow-lg border border-gray-700"
@@ -265,6 +260,21 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
           </div>
         </div>
       </div>
+
+      {/* Right Column: Toolbar */}
+      <div className="flex flex-col items-center gap-2"> 
+        <span className="text-lg font-medium text-gray-300 mb-2">Tools:</span>
+        <ToolBar 
+          activeTool={activeTool} 
+          setActiveTool={setActiveTool} 
+          onTextSubmit={handleTextSubmit}
+          onClear={handleClear}
+          onUndo={handleUndo}
+          onNewScene={handleNewScene}
+          onExport={handleExport}
+        />
+      </div>
+
     </div>
   );
 };

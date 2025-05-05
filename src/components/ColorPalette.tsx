@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PEG_COLORS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -10,7 +9,8 @@ interface ColorPaletteProps {
 
 const ColorPalette: React.FC<ColorPaletteProps> = ({ selectedColor, onSelectColor }) => {
   return (
-    <div className="flex flex-wrap gap-2 mb-4 justify-center">
+    // Change to vertical flex layout
+    <div className="flex flex-col gap-2 items-center">
       {PEG_COLORS.map((color) => (
         <button
           key={color.name}
