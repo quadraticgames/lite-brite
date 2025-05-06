@@ -2,7 +2,7 @@
 import React from 'react';
 import { STENCILS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
-import { Heart, Star, Flower, Cat, BirdIcon } from 'lucide-react';
+import { Heart, Rocket, Flower, Cat, BirdIcon } from 'lucide-react';
 
 interface StencilSelectorProps {
   onSelectStencil: (stencilId: string | null) => void;
@@ -16,7 +16,7 @@ const StencilSelector: React.FC<StencilSelectorProps> = ({
   // Map of stencil IDs to icons
   const stencilIcons: Record<string, React.ReactNode> = {
     'heart': <Heart className="h-5 w-5" />,
-    'star': <Star className="h-5 w-5" />,
+    'spaceship': <Rocket className="h-5 w-5" />,
     'flower': <Flower className="h-5 w-5" />,
     'cat': <Cat className="h-5 w-5" />,
   };
