@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Peg from './Peg';
 import ColorPalette from './ColorPalette';
@@ -296,8 +297,8 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
         />
       </div>
 
-      {/* Center Column: Grid */}
-      <div className="flex justify-center">
+      {/* Center Column: Grid and Stencils */}
+      <div className="flex flex-col items-center">
         <div className="p-6 rounded-lg shadow-xl inline-block border-4 border-gray-600 bg-gradient-to-r from-red-500 via-blue-500 to-red-500 bg-size-200 animate-gradient-xy"> 
           <div 
             ref={gridRef}
@@ -324,9 +325,18 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
             )}
           </div>
         </div>
+        
+        {/* Stencil Selector - Now placed beneath the grid */}
+        <div className="mt-4 flex items-center gap-4">
+          <span className="text-lg font-medium text-gray-300">Stencils:</span>
+          <StencilSelector
+            onSelectStencil={handleStencilSelect}
+            activeStencil={activeStencil}
+          />
+        </div>
       </div>
 
-      {/* Right Column: Tools and Stencils */}
+      {/* Right Column: Tools */}
       <div className="flex flex-col items-center gap-6"> 
         <div className="flex flex-col items-center gap-2">
           <span className="text-lg font-medium text-gray-300 mb-2">Tools</span>
@@ -338,14 +348,6 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
             onUndo={handleUndo}
             onNewScene={handleNewScene}
             onExport={handleExport}
-          />
-        </div>
-        
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-lg font-medium text-gray-300 mb-2">Stencils</span>
-          <StencilSelector
-            onSelectStencil={handleStencilSelect}
-            activeStencil={activeStencil}
           />
         </div>
       </div>
