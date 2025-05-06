@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { STENCILS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
@@ -19,6 +18,7 @@ const StencilSelector: React.FC<StencilSelectorProps> = ({
     'spaceship': <Rocket className="h-5 w-5" />,
     'flower': <Flower className="h-5 w-5" />,
     'cat': <Cat className="h-5 w-5" />,
+    'gameu': <span className="h-5 w-5 flex items-center justify-center font-bold text-lg">G</span>,
   };
 
   return (

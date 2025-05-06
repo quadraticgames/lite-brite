@@ -12,6 +12,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { Link } from 'react-router-dom';
 
 const Index: React.FC = () => {
   const title = "Lite-Brite!";
@@ -68,6 +69,9 @@ const Index: React.FC = () => {
                   <p className="text-white">
                     Here’s a fun fact: Lite-Brite was first released way back in 1967 by Hasbro, and it’s still going strong today! It’s been in cartoons, movies, and even on Stranger Things. In fact, a giant Lite-Brite board was built in 2022 that set a Guinness World Record with over 600,000 pegs! So, whether you’re making a glowing unicorn, rocket ship, or pixelated emoji, Lite-Brite makes your imagination shine bright.
                   </p>
+                  <p className="text-white">
+                    Want a blast from the past? <a href="https://youtu.be/fzGzu93yFKI?si=u4vn7oPyq3JeFv0U" target="_blank" rel="noopener noreferrer" className="text-blue-400 underline hover:text-blue-300 transition-colors">Check out this vintage Lite-Brite commercial from the 70s!</a> It's a real trip down memory lane - well, for me at least!
+                  </p>
                 </DialogDescription>
                 <DialogFooter className="mt-6">
                   <DialogClose asChild>
@@ -76,6 +80,10 @@ const Index: React.FC = () => {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
+            {' | '}
+            <Link to="/stencil-creator" className="text-green-400 underline cursor-pointer hover:text-green-300 transition-colors">
+              Create/Edit Stencils
+            </Link>
           </p>
         </div>
       </div>

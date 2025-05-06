@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Peg from './Peg';
 import ColorPalette from './ColorPalette';
@@ -286,7 +285,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
 
   return (
     // Main container: Horizontal flex layout
-    <div className="flex justify-center items-start w-full max-w-5xl p-4 gap-6"> 
+    <div className="flex justify-center items-start w-full max-w-5xl p-2 gap-2"> 
 
       {/* Left Column: Color Palette */}
       <div className="flex flex-col items-center gap-2"> 
@@ -298,7 +297,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
       </div>
 
       {/* Center Column: Grid and Stencils */}
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center gap-2">
         <div className="p-6 rounded-lg shadow-xl inline-block border-4 border-gray-600 bg-gradient-to-r from-red-500 via-blue-500 to-red-500 bg-size-200 animate-gradient-xy"> 
           <div 
             ref={gridRef}
