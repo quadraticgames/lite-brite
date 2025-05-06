@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 
@@ -8,7 +7,6 @@ interface PegProps {
   row: number;
   col: number;
   glowClass?: string;
-  onClick: (row: number, col: number) => void;
   onMouseDown: (row: number, col: number) => void;
   onMouseEnter: (row: number, col: number) => void;
 }
@@ -19,14 +17,9 @@ const Peg: React.FC<PegProps> = ({
   row,
   col,
   glowClass,
-  onClick,
   onMouseDown,
   onMouseEnter
 }) => {
-  const handleClick = () => {
-    onClick(row, col);
-  };
-  
   const handleMouseDown = () => {
     onMouseDown(row, col);
   };
@@ -45,7 +38,6 @@ const Peg: React.FC<PegProps> = ({
       style={{ 
         backgroundColor: isActive ? color : undefined,
       }}
-      onClick={handleClick}
       onMouseDown={handleMouseDown}
       onMouseEnter={handleMouseEnter}
     />

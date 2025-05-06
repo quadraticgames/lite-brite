@@ -48,6 +48,11 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     }
   }, [clickSound]);
 
+  // ** NEW Callback to play Color Selection Sound **
+  const handleColorSelect = useCallback((color: string) => {
+    setSelectedColor(color); // Then update the state
+  }, []);
+
   // Save current state to history before making changes
   const saveToHistory = useCallback(() => {
     // Create a deep copy of the current grid
@@ -189,7 +194,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     // Do we need to save the pre-cleared state again? saveToHistory already did.
     // setHistory(prev => [...prev, grid]); // Removed potentially duplicate history save
     toast.success("New scene created!");
-  }, [saveToHistory]); // Removed grid dependency as saveToHistory handles it
+  }, [saveToHistory]);
 
   // ** NEW Function to Export Grid as PNG **
   const handleExport = useCallback(async () => {
@@ -212,7 +217,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
       console.error('Oops, something went wrong!', err);
       toast.error("Failed to export image.");
     }
-  }, []); // No dependencies needed for this version
+  }, []);
 
   // Find the appropriate glow class for a color
   const getGlowClass = (color: string) => {
@@ -220,22 +225,30 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     return pegColor ? pegColor.glowClass : '';
   };
 
+  // ** NEW Tool Change Handler (combines sound and state update) **
+  const handleToolChange = useCallback((tool: string) => {
+    console.log("handleToolChange called for tool:", tool); // Added log
+    setActiveTool(tool); // Then update the state
+  }, []);
+
   return (
     // Main container: Horizontal flex layout
     <div className="flex justify-center items-start w-full max-w-5xl p-4 gap-6"> 
 
       {/* Left Column: Color Palette */}
       <div className="flex flex-col items-center gap-2"> 
-        <span className="text-lg font-medium text-gray-300 mb-2">Colors:</span>
+        <span className="text-lg font-medium text-gray-300 mb-2">Colors
+
+        </span>
         <ColorPalette 
           selectedColor={selectedColor} 
-          onSelectColor={setSelectedColor} 
+          onSelectColor={handleColorSelect} 
         />
       </div>
 
       {/* Center Column: Grid */}
       <div className="flex justify-center">
-        <div className="bg-litebrite-background p-6 rounded-lg shadow-xl inline-block"> 
+        <div className="p-6 rounded-lg shadow-xl inline-block border-4 border-gray-600 bg-gradient-to-r from-red-500 via-blue-500 to-red-500 bg-size-200 animate-gradient-xy"> 
           <div 
             ref={gridRef} // Assign the ref to the grid container
             className="grid gap-1 bg-black p-4 rounded-lg shadow-lg border border-gray-700"
@@ -264,10 +277,10 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
 
       {/* Right Column: Toolbar */}
       <div className="flex flex-col items-center gap-2"> 
-        <span className="text-lg font-medium text-gray-300 mb-2">Tools:</span>
+        <span className="text-lg font-medium text-gray-300 mb-2">Tools</span>
         <ToolBar 
           activeTool={activeTool} 
-          setActiveTool={setActiveTool} 
+          onToolChange={handleToolChange} 
           onTextSubmit={handleTextSubmit}
           onClear={handleClear}
           onUndo={handleUndo}

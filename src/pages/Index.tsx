@@ -15,14 +15,19 @@ import { Button } from "@/components/ui/button"
 
 const Index: React.FC = () => {
   const title = "Lite-Brite!";
+  // Filter out black color for title animation
+  const nonBlackColors = PEG_COLORS.filter(color => color.name !== 'black');
+
   const [letterColors, setLetterColors] = useState<string[]>(() => 
-    title.split('').map(() => PEG_COLORS[Math.floor(Math.random() * PEG_COLORS.length)].value)
+    // Use nonBlackColors for initial state as well
+    title.split('').map(() => nonBlackColors[Math.floor(Math.random() * nonBlackColors.length)].value)
   );
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       setLetterColors(
-        title.split('').map(() => PEG_COLORS[Math.floor(Math.random() * PEG_COLORS.length)].value)
+        // Use nonBlackColors for random selection in interval
+        title.split('').map(() => nonBlackColors[Math.floor(Math.random() * nonBlackColors.length)].value)
       );
     }, 500); 
 
@@ -57,10 +62,10 @@ const Index: React.FC = () => {
                   <DialogTitle className="text-xl text-white">What is Lite-Brite?</DialogTitle>
                 </DialogHeader>
                 <DialogDescription className="mt-4 space-y-4 text-sm font-sans font-light">
-                  <p>
+                  <p className="text-white">
                     Lite-Brite is a super cool, light-up art toy that lets you create glowing pictures using colorful plastic pegs. You press the pegs into a black screen, and when the light behind it turns on—boom!—your artwork lights up like a mini neon sign. You can make your own designs or use templates that show you where to put each color. It’s like painting with light, and the results are always awesome!
                   </p>
-                  <p>
+                  <p className="text-white">
                     Here’s a fun fact: Lite-Brite was first released way back in 1967 by Hasbro, and it’s still going strong today! It’s been in cartoons, movies, and even on Stranger Things. In fact, a giant Lite-Brite board was built in 2022 that set a Guinness World Record with over 600,000 pegs! So, whether you’re making a glowing unicorn, rocket ship, or pixelated emoji, Lite-Brite makes your imagination shine bright.
                   </p>
                 </DialogDescription>

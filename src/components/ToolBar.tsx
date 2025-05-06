@@ -8,7 +8,7 @@ import { TOOLS } from '@/lib/constants';
 
 interface ToolBarProps {
   activeTool: string;
-  setActiveTool: (tool: string) => void;
+  onToolChange: (tool: string) => void;
   onTextSubmit: (text: string) => void;
   onClear: () => void;
   onUndo: () => void;
@@ -16,7 +16,7 @@ interface ToolBarProps {
   onExport: () => void;
 }
 
-const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubmit, onClear, onUndo, onNewScene, onExport }) => {
+const ToolBar: React.FC<ToolBarProps> = ({ activeTool, onToolChange, onTextSubmit, onClear, onUndo, onNewScene, onExport }) => {
   const [text, setText] = useState('');
   const [open, setOpen] = useState(false);
   
@@ -38,7 +38,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubm
             ? "bg-blue-600 text-white hover:bg-blue-700" 
             : "bg-gray-700 text-gray-400 hover:bg-gray-600"
         )}
-        onClick={() => setActiveTool(TOOLS.PAINT)}
+        onClick={() => onToolChange(TOOLS.PAINT)}
         title="Paint Tool"
       >
         <Brush className="h-5 w-5" />
@@ -54,7 +54,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ activeTool, setActiveTool, onTextSubm
                 ? "bg-blue-600 text-white hover:bg-blue-700" 
                 : "bg-gray-700 text-gray-400 hover:bg-gray-600"
             )}
-            onClick={() => setActiveTool(TOOLS.TEXT)}
+            onClick={() => onToolChange(TOOLS.TEXT)}
             title="Text Tool"
           >
             <TextCursor className="h-5 w-5" />
