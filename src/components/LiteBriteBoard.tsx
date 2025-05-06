@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import Peg from './Peg';
 import ColorPalette from './ColorPalette';
 import ToolBar from './ToolBar';
-import { PEG_COLORS, DEFAULT_GRID_SIZE, EMPTY_COLOR, TOOLS } from '@/lib/constants';
+import StencilSelector from './StencilSelector';
+import { PEG_COLORS, DEFAULT_GRID_SIZE, EMPTY_COLOR, TOOLS, STENCILS } from '@/lib/constants';
 import { textToPegPattern } from '@/lib/textToPegs';
 import { toast } from "sonner";
 import { toPng } from 'html-to-image';
@@ -21,9 +22,10 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
   // Add history for undo functionality
   const [history, setHistory] = useState<Array<Array<Array<string>>>>([]);
 
-  const [selectedColor, setSelectedColor] = useState(PEG_COLORS[0].value); // Revert: Select White initially
+  const [selectedColor, setSelectedColor] = useState(PEG_COLORS[0].value);
   const [activeTool, setActiveTool] = useState(TOOLS.PAINT);
   const [isPainting, setIsPainting] = useState(false);
+  const [activeStencil, setActiveStencil] = useState<string | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
   // ** Sound Effect **
@@ -183,6 +185,16 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     toast.info("Board cleared!");
   };
 
+  // ** Handle stencil selection **
+  const handleStencilSelect = useCallback((stencilId: string | null) => {
+    setActiveStencil(stencilId);
+    if (stencilId) {
+      toast.info(`${STENCILS.find(s => s.id === stencilId)?.name} stencil activated`);
+    } else {
+      toast.info("Stencil removed");
+    }
+  }, []);
+
   // ** NEW Function to clear the board (New Scene) **
   const handleNewScene = useCallback(() => {
     saveToHistory(); // Save the state *before* clearing
@@ -231,15 +243,53 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     setActiveTool(tool); // Then update the state
   }, []);
 
+  // Get stencil overlay pattern if a stencil is active
+  const getStencilPattern = useCallback(() => {
+    if (!activeStencil) return null;
+    
+    const stencil = STENCILS.find(s => s.id === activeStencil);
+    if (!stencil) return null;
+    
+    // Center the stencil pattern on the grid
+    const pattern = stencil.data;
+    const patternHeight = pattern.length;
+    const patternWidth = pattern[0].length;
+    
+    const startRow = Math.floor((rows - patternHeight) / 2);
+    const startCol = Math.floor((cols - patternWidth) / 2);
+    
+    return { pattern, startRow, startCol };
+  }, [activeStencil, rows, cols]);
+
+  // Check if a peg is part of the stencil pattern
+  const isPegInStencilPattern = useCallback((row: number, col: number) => {
+    const stencilData = getStencilPattern();
+    if (!stencilData) return false;
+    
+    const { pattern, startRow, startCol } = stencilData;
+    const patternRow = row - startRow;
+    const patternCol = col - startCol;
+    
+    // Check if within pattern bounds and if the pattern has an 'X' at this position
+    if (
+      patternRow >= 0 &&
+      patternRow < pattern.length &&
+      patternCol >= 0 &&
+      patternCol < pattern[0].length
+    ) {
+      return pattern[patternRow][patternCol] === 'X';
+    }
+    
+    return false;
+  }, [getStencilPattern]);
+
   return (
     // Main container: Horizontal flex layout
     <div className="flex justify-center items-start w-full max-w-5xl p-4 gap-6"> 
 
       {/* Left Column: Color Palette */}
       <div className="flex flex-col items-center gap-2"> 
-        <span className="text-lg font-medium text-gray-300 mb-2">Colors
-
-        </span>
+        <span className="text-lg font-medium text-gray-300 mb-2">Colors</span>
         <ColorPalette 
           selectedColor={selectedColor} 
           onSelectColor={handleColorSelect} 
@@ -250,7 +300,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
       <div className="flex justify-center">
         <div className="p-6 rounded-lg shadow-xl inline-block border-4 border-gray-600 bg-gradient-to-r from-red-500 via-blue-500 to-red-500 bg-size-200 animate-gradient-xy"> 
           <div 
-            ref={gridRef} // Assign the ref to the grid container
+            ref={gridRef}
             className="grid gap-1 bg-black p-4 rounded-lg shadow-lg border border-gray-700"
             style={{
               gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
@@ -268,6 +318,7 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
                   glowClass={getGlowClass(pegColor)}
                   onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
                   onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+                  isStencil={isPegInStencilPattern(rowIndex, colIndex)}
                 />
               ))
             )}
@@ -275,18 +326,28 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
         </div>
       </div>
 
-      {/* Right Column: Toolbar */}
-      <div className="flex flex-col items-center gap-2"> 
-        <span className="text-lg font-medium text-gray-300 mb-2">Tools</span>
-        <ToolBar 
-          activeTool={activeTool} 
-          onToolChange={handleToolChange} 
-          onTextSubmit={handleTextSubmit}
-          onClear={handleClear}
-          onUndo={handleUndo}
-          onNewScene={handleNewScene}
-          onExport={handleExport}
-        />
+      {/* Right Column: Tools and Stencils */}
+      <div className="flex flex-col items-center gap-6"> 
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-lg font-medium text-gray-300 mb-2">Tools</span>
+          <ToolBar 
+            activeTool={activeTool} 
+            onToolChange={handleToolChange} 
+            onTextSubmit={handleTextSubmit}
+            onClear={handleClear}
+            onUndo={handleUndo}
+            onNewScene={handleNewScene}
+            onExport={handleExport}
+          />
+        </div>
+        
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-lg font-medium text-gray-300 mb-2">Stencils</span>
+          <StencilSelector
+            onSelectStencil={handleStencilSelect}
+            activeStencil={activeStencil}
+          />
+        </div>
       </div>
 
     </div>

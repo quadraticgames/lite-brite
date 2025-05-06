@@ -1,3 +1,4 @@
+
 export const PEG_COLORS = [
   { name: 'white', value: '#c5c5c5', tailwindClass: 'bg-litebrite-white', glowClass: 'shadow-glow-white' }, 
   { name: 'black', value: '#000000', tailwindClass: 'bg-litebrite-black', glowClass: 'shadow-glow-black' },
@@ -19,3 +20,70 @@ export const TOOLS = {
   PAINT: 'paint',
   TEXT: 'text',
 };
+
+// New stencil overlays
+export const STENCILS = [
+  {
+    id: 'heart',
+    name: 'Heart',
+    data: [
+      "    XXX   XXX    ",
+      "   XXXXX XXXXX   ",
+      "  XXXXXXXXXXXXX  ",
+      "  XXXXXXXXXXXXX  ",
+      "   XXXXXXXXXXX   ",
+      "    XXXXXXXXX    ",
+      "     XXXXXXX     ",
+      "      XXXXX      ",
+      "       XXX       ",
+      "        X        ",
+    ],
+  },
+  {
+    id: 'star',
+    name: 'Star',
+    data: [
+      "        X        ",
+      "        X        ",
+      "     X  X  X     ",
+      "      X X X      ",
+      "XXXXX  XXX  XXXXX",
+      " XXXXXXXXXXXXX   ",
+      "   XXXXXXXXX     ",
+      "    XX X XX      ",
+      "   X   X   X     ",
+      "       X         ",
+    ],
+  },
+  {
+    id: 'flower',
+    name: 'Flower',
+    data: [
+      "      XXX       ",
+      "  XX  XXX  XX   ",
+      " XXXX XXX XXXX  ",
+      " XXXX XXX XXXX  ",
+      "  XX XXXXX XX   ",
+      "     XXXXX      ",
+      "     XXXXX      ",
+      "      XXX       ",
+      "      XXX       ",
+      "      XXX       ",
+    ],
+  },
+  {
+    id: 'cat',
+    name: 'Cat',
+    data: [
+      "  X       X  ",
+      " XXX     XXX ",
+      " XXXXXXXXXXX ",
+      "  XXXXXXXXX  ",
+      "   XXXXXXX   ",
+      "    XXXXX    ",
+      "     XXX     ",
+      "    X X X    ",
+      "   X  X  X   ",
+    ],
+  },
+];
