@@ -87,6 +87,5 @@ const Index: React.FC = () => {
       <Footer />
     </div>
   );
-};
 
 export default Index;
