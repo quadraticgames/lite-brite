@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
           </Link>
           {' | '}
           <a 
-            href="https://github.com/yourusername/peggle-phrase-painter" 
+            href="https://github.com/quadraticgames/lite-brite" 
             target="_blank" 
             rel="noopener noreferrer"
             className="text-blue-400 hover:text-blue-300 transition-colors"
