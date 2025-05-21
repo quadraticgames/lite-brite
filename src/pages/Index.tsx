@@ -12,7 +12,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Link } from 'react-router-dom';
+import Footer from '@/components/Footer';
 
 const Index: React.FC = () => {
   const title = "Lite-Brite!";
@@ -80,14 +80,11 @@ const Index: React.FC = () => {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            {' | '}
-            <Link to="/stencil-creator" className="text-green-400 underline cursor-pointer hover:text-green-300 transition-colors">
-              Create/Edit Stencils
-            </Link>
           </p>
         </div>
       </div>
       <LiteBriteBoard />
+      <Footer />
     </div>
   );
 };

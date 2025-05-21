@@ -18,6 +18,7 @@ export const EMPTY_COLOR = 'transparent';
 export const TOOLS = {
   PAINT: 'paint',
   TEXT: 'text',
+  ERASER: 'eraser'
 };
 
 // New stencil overlays
@@ -97,24 +98,49 @@ export const STENCILS = [
         "         XXXXXXXXXXXXX         ",
         "        XXXXXXXXXXXXXXX        ",
         "       XXXXXXXXXXXXXXXXX       ",
+        "     XXXXXX   XXX   XXXXXX     ",
         "      XXXXX   XXX   XXXXX      ",
         "      XXXXX   XXX   XXXXX      ",
-        "      XXXXX   XXX   XXXXX      ",
-        "      XXXXX   XXX   XXXXX      ",
-        "      XXXXXXXXXXXXXXXXXXX      ",
-        "      XX  XXXX   XXXX  XX      ",
-        "      XX  XXXX   XXXX  XX      ",
+        "      XXXXX   XXX   XX XX      ",
+        "      XXXXXXXXXXXXXXXX XX      ",
+        "      XX  XXXX   XXXXX XX      ",
+        "      XX  XXXX   XXXXX XX      ",
         "      XXXXXXXX   XXXXXXXX      ",
         "      XXXXXXXX   XXXXXXXX      ",
         "      XXXXXXXX   XXXXXXXX      ",
         "                               "
       ],
-    
-  },
-  {
-    id: 'gameu',
-    name: 'GAMEU!',
-    data: [
+    },
+    {
+      id: 'sailboat',
+      name: 'Sailboat',
+      data: [
+        "               X               ",
+        "              XXX              ",
+        "             XXX X             ",
+        "            XXXX  X            ",
+        "           XXXXX   X           ",
+        "          XXXXXX    X          ",
+        "         XXXXXXX     X         ",
+        "        XXXXXXXX      X        ",
+        "           XXX         X       ",
+        "           XXX          X      ",
+        "           XXX           X     ",
+        "           XXX            X    ",
+        "     XXXX  XXX  XXXX     X X   ",
+        "   XX  XXXXXXX  XXX      XXX   ",
+        "  XXXXXXXXXXXXXXXXXXXXXXXXXXX  ",
+        "   XXXXXXXXXXXXXXXXXXXXXXXXX   ",
+        "    XXXXXXXXXXXXXXXXXXXXXXX    ",
+        "                               ",
+        "                               ",
+        "                               "
+      ],
+    },
+    {
+      id: 'gameu',
+      name: 'GAMEU!',
+      data: [
       "XXXX  XX  XXXXX XXXX X  X X ",
       "X    X  X X X X X    X  X X ",
       "X XX X  X X X X XXX  X  X X ",

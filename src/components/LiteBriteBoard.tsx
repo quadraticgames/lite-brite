@@ -74,56 +74,61 @@ const LiteBriteBoard: React.FC<LiteBriteBoardProps> = () => {
     }
   }, [history, toast]);
 
-  // ** NEW Function to apply TOGGLE color change for initial click **
-  const applyToggleColorChange = useCallback((row: number, col: number) => {
-    setGrid(prevGrid => {
-      if (!prevGrid || !prevGrid[row]) {
-        console.error("Grid or row is undefined in applyToggleColorChange");
-        return prevGrid;
-      }
-      // Determine if the color is actually changing
-      const currentColor = prevGrid[row][col];
-      const newColor = currentColor === selectedColor ? EMPTY_COLOR : selectedColor;
-      
-      // Only play sound if the color is different from the new target color
-      // (prevents playing sound when clicking an already colored peg to erase it, unless desired)
-      // Let's play it on any change for now.
-      playClickSound(); 
-
-      const newGrid = [...prevGrid];
-      newGrid[row] = [...newGrid[row]]; // Ensure row is copied
-      newGrid[row][col] = newColor;
-      return newGrid;
-    });
-  }, [selectedColor, playClickSound]); // Added playClickSound dependency
-
   // Handle mouse down for initial click/drag start
   const handleMouseDown = useCallback((row: number, col: number) => {
-    if (activeTool === TOOLS.PAINT) {
-      saveToHistory(); // Save history ONLY on initial click/drag start
-      setIsPainting(true);
-      applyToggleColorChange(row, col); // Apply the TOGGLE change
-    }
-  }, [activeTool, applyToggleColorChange, saveToHistory]); // Use applyToggleColorChange
+    saveToHistory();
+    setIsPainting(true);
+
+    setGrid(prevGrid => {
+      if (!prevGrid || !prevGrid[row]) {
+        console.error("Grid or row is undefined in handleMouseDown");
+        return prevGrid;
+      }
+
+      const newGrid = prevGrid.map(r => [...r]); // Create a new grid copy
+      const currentColor = newGrid[row][col];
+      let newColor = currentColor;
+
+      if (activeTool === TOOLS.PAINT) {
+        newColor = selectedColor;
+      } else if (activeTool === TOOLS.ERASER) {
+        newColor = EMPTY_COLOR;
+      }
+
+      if (newColor !== currentColor) {
+        playClickSound();
+        newGrid[row][col] = newColor;
+        return newGrid;
+      }
+      return prevGrid; // No change, return previous grid
+    });
+  }, [activeTool, selectedColor, saveToHistory, playClickSound, setGrid, setIsPainting]);
 
   // Handle mouse enter for drag painting (apply color directly, no toggle)
   const handleMouseEnter = useCallback((row: number, col: number) => {
-    if (isPainting && activeTool === TOOLS.PAINT) {
-      // Apply selected color directly, only if the peg isn't already that color
+    if (isPainting) {
       setGrid(prevGrid => {
         if (!prevGrid || !prevGrid[row]) return prevGrid;
-        // Only paint and play sound if the peg is currently empty or a different color
-        if (prevGrid[row][col] !== selectedColor) {
-           playClickSound(); // Play sound on drag paint
-           const newGrid = prevGrid.map((r, rIndex) =>
-               rIndex === row ? [...r.slice(0, col), selectedColor, ...r.slice(col + 1)] : r
-           );
-           return newGrid;
+
+        const newGrid = prevGrid.map(r => [...r]); // Create a new grid copy
+        const currentColor = newGrid[row][col];
+        let newColor = currentColor;
+
+        if (activeTool === TOOLS.PAINT) {
+          newColor = selectedColor;
+        } else if (activeTool === TOOLS.ERASER) {
+          newColor = EMPTY_COLOR;
         }
-        return prevGrid; // No change needed if already the selected color
+
+        if (newColor !== currentColor) {
+          playClickSound();
+          newGrid[row][col] = newColor;
+          return newGrid;
+        }
+        return prevGrid; // No change
       });
     }
-  }, [isPainting, activeTool, selectedColor, playClickSound]); // Added playClickSound dependency
+  }, [isPainting, activeTool, selectedColor, playClickSound, setGrid]);
 
   const handleMouseUp = useCallback(() => {
     if (isPainting) { // Only reset if we were actually painting
